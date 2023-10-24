@@ -943,113 +943,134 @@ There are also a whole class of [window functions](https://cran.r-project.org/we
 class: inverse, center, middle
 name: tidyr
 
-# Data tidying with tidyr
+# Presentation on Fable Package for Time series Forcasting
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px style="width:1000px; margin:auto;"/></html>
 
 ---
 
-# Key tidyr verbs
+# Time series Forecasting
+.pull-right-small-center[
+<div align="center">
+<br>
+<img src="pics/fable-opengraph.png" height=250>
+ <p style="text-align: center; font-size: 16px; font-weight:">image from: Mitchell O'Hara-Wild</p>
+</div>
+]
 
 .pull-left-wide[
 
-`tidyr` is part of the core tidyverse. There are four key `tidyr` verbs that you need to learn.
+`Time Series forecasting` is a crucial component of data analysis, enabling us to make predictions about future values based on historical data points. 
 
-1. `pivot_longer()`: Pivot wide data into long format (i.e. "melt").<sup>1</sup> 
+In R, the `fable` package provides a powerful framework for time series forecasting, making it easier than ever to create accurate and reliable forecasts.
 
-2. `pivot_wider()`: Pivot long data into wide format (i.e. "cast").<sup>2</sup> 
+The existing integration of modeling and the tidyverse is especially problematic for time series, as the input data structure(s) is/are inherently untidy. 
 
-3. `separate()`: Separate (i.e. split) one column into multiple columns. <sup>3</sup> 
-
-4. `unite()`: Unite (i.e. combine) multiple columns into one.
-
-.footnote[
-<sup>1</sup> Updated version of `tidyr::gather()`.
-
-<sup>2</sup> Updated version of `tidyr::spread()`.
-
-<sup>3</sup> Updated versions: `separate_wider_delim()` and `separate_wider_position()`.
-]  
+Much like `tsibble` implements tidy time series data, the fable package applies tidyverse principles to time series modeling, making the forecasting workflow seamlessly integrate with other tidyverse packages. 
 
 ]
+
+---
+
+# Introduction to "fable"
 
 .pull-right-small-center[
 <div align="center">
 <br>
-<img src="pics/tidyr.png" height=250>
+<img src="pics/fable_logo.png" height=250>
+ <p style="text-align: center; font-size: 16px; font-weight:">image from: Mitchell O'Hara-Wild</p>
 </div>
 ]
 
+`fable` is a comprehensive time series forecasting package in R, designed to make forecasting tasks more accessible, flexible, and efficient.
+
+It extends the functionalities of the "forecast" package and the `tsibble` package, making it a versatile tool for time series analysis and forecasting.
+
+The fable package provides some commonly used univariate and multivariate time series forecasting models which can be used with tidy temporal data in the tsibble format.
+
+These models are used within a consistent and tidy modeling framework, allowing several models to be estimated, compared, combined, forecasted and otherwise worked across many time series.
+
+**Note** The tidy models framework is a collection of R packages for modeling and machine learning using tidyverse principles 
+
+---
+# The Role of Fable in R
+
+- Fable is an R package designed to streamline time series forecasting. It is built on top of the tidyverse, which makes it user-friendly and integrates seamlessly with other data manipulation and visualization tools in R.
+
+- Fable provides a wide range of forecasting models and methods, from simple ones like exponential smoothing to more complex models such as ARIMA and state space models. This diversity of approaches allows users to choose the most appropriate model for their specific data set and forecasting needs.
+
+- Additionally, Fable makes it easy to visualize forecasts, evaluate model performance, and create production-ready reports. With the `fable` package, you can unlock the power of time series forecasting in R to gain insights and make data-driven decisions.
+
+**Installing and Loading**
+
+You can install the `fable` package from CRAN using the install.packages("fable") command.
+
+To load the package, use the library(fable) function.
+
+It is crucial to have the "tsibble" package installed and loaded, as `fable` heavily relies on it for time series data manipulation.
 
 ---
 
-# On "longer" and "wider" datasets
+# Key Features of "fable"
 
-.pull-left-wide[
-Remember the **key philosophy for tidy data**?
+### Unified Framework:
 
-1. Each variable forms a column.
-2. Each observation forms a row.
-3. Each type of observational unit forms a table.
+This where fable seamlessly integrates with the `tsibble` package for easy manipulation of time series data. eg monthly sales data.This integration simplifies the entire process, from data import to modeling.
 
-One of the most common tasks for data scientists is to **reshape** data from one form to the other. 
+### State Space Models:
 
-There are **multiple ways to store the same data in a dataset** (or across multiple tables; but more on that in the session on databases).
+It offers advanced state space modeling, which can capture complex time series patterns and relationships.
 
-Here, we learn how to shift between 
-- **"wider"** formats, i.e. data being stored across more columns and
-- **"longer"** formats, i.e. data being stored across more rows.
-]
+- State-space models deal with dynamic time series problems that involve unobserved variables or parameters that describe the evolution in the state of the underlying system(Kevin Kotzé)
 
-.pull-right-small-center[
-<div align="center">
-</br>
-Tidy data in a nutshell
-<img src="pics/tidydata-1.png" height=150>
-</br>
-</br>
-Benefits of tidy data
-<img src="pics/tidydata-2.png" height=150>
-</div>
-]
+### Model Diagnostic Tools
+
+`fable` includes an array of diagnostic tools to assess the quality and reliability of your forecasting models. 
+
+These tools may include visualizations, such as residual plots and forecasting accuracy metrics, like Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE), Cross-Validation, Autocorrelation etc. These diagnostics help you fine-tune your models.
 
 ---
 
-# From wide to long to wide
+# Key Features of "fable"
+
+### Visualization:
+
+The package empowers users with rich visualization capabilities, enabling a better understanding of time series data. Some commonly used packages with the fable are listed below:
+ - Ggplot2
+ 
+ - Ggfortify: This package allows us to blend the use of some basic functions with the package eg. autoplot() function with forecast objects.
+ 
+ - feasts: stands for Feature Extraction and Statistics for Time Series, which is used for  extracting features from time series data and generating plots like seasonal decomposition plots and autocorrelation plots.
+ 
+ - patchwork: allows you to combine and arrange multiple plots into a single, cohesive visualization. 
+
+---
+# Models Available in the “fable" package
+
+The `fable` package in R provides a variety of time series models for forecasting. Some of the key models available in the `fable` package include:
+
+ - ETS Models: it provides most flexible way of modeling error, trend and seasonal elements together.
+ 
+ - ARIMA(p, d, q): Autoregressive integrated moving average model with specified order (p, d, q), where p,d,q represents autoregressive, integrated and moving average respectively.
+
+ - PROPHET: Forecasting model developed by Facebook for time series with daily observations and multiple seasonality.
+
+- Neural Network Models: regression models etc.
+
 
 .pull-left-wide[
 
-### From wider to longer
+**What about fable ? **
 
-- `pivot_longer()` pivots `cols` columns, moving column names into a `names_to` column, and column values into a `values_to` column.
-- Recall a panel study design with multiple observations per unit.
-- In the classical long format, each row represents one observation.
-- Note how this is approaching the ideal of **tidy data**.
-
-### From longer to wider
-
-- `pivot_wider()` pivots a `names_from` and a `values_from` column into a rectangular field of cells.
-- In a panel study design, this would allow you to have one variable per measurement (e.g., pre- and posttreatment outcome variable).
-- While this is nice for the human eye, it is sometimes not what fits the tidyverse workflow. Also, wenn you have multiple repeated measurements (think: variables in a population survey), the number of columns is quickly inflated. Be ready to `pivot_longer()`. 
+A fable is never true, but it tells you something important about reality - and that’s what a forecast is. Rob Hyndman (2018-06-21)
 ]
-
 .pull-right-small-center[
-`pivot_longer()`
 <div align="center">
-<img src="pics/pivot_longer.png" height=150>
-</br>
-</br>
-</br>
-</div>
-
-`pivot_wider()`
-<div align="center">
-<img src="pics/pivot_wider.png" height=150>
+<br>
+<img src="pics/tom.png" height=180>
+ <p style="text-align: center; font-size: 16px; font-weight:">image from: worksheet planet</p>
 </div>
 ]
-
-
-
 
 ---
 
