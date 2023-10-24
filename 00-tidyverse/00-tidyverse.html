@@ -18,7 +18,7 @@ class: center, middle, inverse, title-slide
 # Introduction to Data Science
 ]
 .subtitle[
-## Session 0: R and the tidyverse
+## Time-series analysis with tsibble and fable
 ]
 .author[
 ### Armande, Benjamin and Johannes
@@ -1355,7 +1355,7 @@ name: tidyr
 
 In R, the `fable` package provides a powerful framework for time series forecasting, making it easier than ever to create accurate and reliable forecasts.
 
-The existing integration of modeling and the tidyverse is especially problematic for time series, as the input data structure(s) is/are inherently untidy. 
+The existing integration of modeling and the tidyverse is especially problematic for time series, as the input data structure(ts) is/are inherently untidy. 
 
 Much like `tsibble` implements tidy time series data, the fable package applies tidyverse principles to time series modeling, making the forecasting workflow seamlessly integrate with other tidyverse packages. 
 
@@ -1398,7 +1398,7 @@ You can install the `fable` package from CRAN using the install.packages("fable"
 
 To load the package, use the library(fable) function.
 
-It is crucial to have the "tsibble" package installed and loaded, as `fable` heavily relies on it for time series data manipulation.
+It is crucial to have the `tsibble` package installed and loaded, as `fable` heavily relies on it for time series data manipulation.
 
 ---
 
@@ -1461,6 +1461,205 @@ A fable is never true, but it tells you something important about reality - and 
 &lt;img src="pics/tom.png" height=180&gt;
  &lt;p style="text-align: center; font-size: 16px; font-weight:"&gt;image from: worksheet planet&lt;/p&gt;
 &lt;/div&gt;
+]
+
+---
+# Forecasting with fable
+
+
+```r
+R&gt; pacman::p_load(fable,tidyverse,tsibble)
+```
+
+It is a good practice to observe your data before you start to work with it (modelling).
+
+
+```r
+R&gt; trips = tourism |&gt; 
++   summarise(Trips = sum(Trips))
+R&gt; #trips 
+```
+
+
+The terms used with the fable model somewhat include model specific functions called ‘specials, which describes how the time series dynamics are captured by a model.
+
+`Fable` allows model specification that supports formula based interface. eg lm()
+
+`ETS()` function `ref: page 55` is used to define `exponential smoothing models` which provides ‘specials’ for controlling the error(), trend() and season().
+
+**Note** finding an appropriate model specification can be tricky as it requires some prior knowledge about temporal patterns. **Do not worry!** 
+
+---
+# Forecasting with fable
+### Model specification:  
+This is the process of defining and describing the structure, components, and assumptions of a statistical or mathematical model.
+
+`ETS()` and other models automatically choose the best specification if several options are available. `fable` can determine if the seasonality is additive (season("A")) or multiplicative (season("M")), using:
+
+`ETS(Trips ~ error("A") + trend("A") + season(c("A", "M")))` considering the tourist data in R
+
+ETS model can be implement with:
+`ETS(Trips)`
+
+### Model Estimation
+This training one or more unique models with a dataset. To do this we can use the `model()` function. eg:
+
+---
+# Forecasting with fable
+.pull-left[
+ - fitting a model with the fit `model()` function
+
+```r
+R&gt; trips = tourism |&gt; 
++   summarise(Trips = sum(Trips))
+R&gt; 
+R&gt; fit = trips |&gt; 
++   model(auto_ets = ETS(Trips))
+R&gt; fit
+```
+
+```
+## # A mable: 1 x 1
+##       auto_ets
+##        &lt;model&gt;
+## 1 &lt;ETS(A,A,A)&gt;
+```
+The result informs us that model ETS(A,A,A) has been automatically selected. We can use the `report()` function to provide summary to our fit if we have only one model selected.
+]
+.pull-right[
+---
+# Forecasting with fable
+
+
+```r
+R&gt; report(fit)
+```
+
+```
+## Series: Trips 
+## Model: ETS(A,A,A) 
+##   Smoothing parameters:
+##     alpha = 0.4495675 
+##     beta  = 0.04450178 
+##     gamma = 0.0001000075 
+## 
+##   Initial states:
+##      l[0]      b[0]      s[0]     s[-1]     s[-2]    s[-3]
+##  21689.64 -58.46946 -125.8548 -816.3416 -324.5553 1266.752
+## 
+##   sigma^2:  699901.4
+## 
+##      AIC     AICc      BIC 
+## 1436.829 1439.400 1458.267
+```
+
+]
+
+---
+# Forecasting with fable
+Fable also supports verbs from `broom package` which enable us to use various functions: `tidy()` your coefficients, `glance()` your model summary statistics, and `augment()` your data with predictions.
+
+.pull-left[
+ - **forecasting**
+
+Use the `forecast()` function to produce a forecast for the estimated models.
+
+```r
+R&gt; fore_cast = fit |&gt; 
++   forecast(h = "1 year")
+R&gt; fore_cast
+```
+
+```
+## # A fable: 4 x 4 [1Q]
+## # Key:     .model [1]
+##   .model   Quarter             Trips  .mean
+##   &lt;chr&gt;      &lt;qtr&gt;            &lt;dist&gt;  &lt;dbl&gt;
+## 1 auto_ets 2018 Q1   N(29068, 7e+05) 29068.
+## 2 auto_ets 2018 Q2  N(27794, 870750) 27794.
+## 3 auto_ets 2018 Q3 N(27619, 1073763) 27619.
+## 4 auto_ets 2018 Q4 N(28627, 1311711) 28627.
+```
+]
+.pull-right[
+ - **Plot time series**
+
+```r
+R&gt; #fore_cast |&gt; 
+R&gt;   #autoplot(trips)
+```
+
+.pull-left[
+&lt;div align="center"&gt;
+&lt;br&gt;
+&lt;img src="pics/p2.png" height=350&gt;
+ &lt;p style="text-align: center; font-size: 16px; font-weight:"&gt; Time series plot&lt;/p&gt;
+&lt;/div&gt;
+]
+]
+
+---
+# Forecasting with fable
+You can also try forecasting with different models; eg ARIMA, TSLM (linear model) etc.
+
+
+```r
+R&gt; fit = trips |&gt; 
++   model(
++     arima = ARIMA(Trips),
++     ets = ETS(Trips),
++     lm = TSLM(Trips ~ trend() + season())
++   )
+```
+
+```
+## Warning: 1 error encountered for arima
+## [1] The `feasts` package must be installed to use this functionality. It can be installed with install.packages("feasts")
+```
+
+```r
+R&gt; fit
+```
+
+```
+## # A mable: 1 x 3
+##          arima          ets      lm
+##        &lt;model&gt;      &lt;model&gt; &lt;model&gt;
+## 1 &lt;NULL model&gt; &lt;ETS(A,A,A)&gt;  &lt;TSLM&gt;
+```
+
+The results now show the 3 models. We can also make a plot with respect to each model.
+
+---
+# Forecasting with fable
+
+```r
+R&gt; #fit |&gt; 
+R&gt;   #forecast(h = "3 year") |&gt;
+R&gt;  # autoplot((trips), level = 60, alpha = 0.5)
+```
+.pull-left[
+.pull-center[
+&lt;div align="center"&gt;
+&lt;br&gt;
+&lt;img src="pics/p2.png" height=350&gt;
+ &lt;p style="text-align: center; font-size: 16px; font-weight:"&gt; Time series plot&lt;/p&gt;
+&lt;/div&gt;
+]
+]
+.pull-right[
+**Final comment**
+A lot more could be done with respect to whatever your problem set maybe.
+- Forecasting (forecast())
+- Missing value interpolation (interpolate())
+- Reporting model output (report())
+- Simulation of future paths (generate())
+- Streaming new data (stream())
+- Re-estimation (refit())
+- Decomposition of model components (components())
+- Model equation output (equation())
+- Broom verbs (augment(), coef()/tidy(), glance())
+- Model fits (fitted(), residuals())
 ]
 
 ---
