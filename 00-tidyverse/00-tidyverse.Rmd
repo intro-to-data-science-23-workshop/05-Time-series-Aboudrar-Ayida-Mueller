@@ -354,7 +354,7 @@ head(sales_data)
 With a Real Dataset: AirPassengers, monthly airline passenger numbers from 1949 to 1960:
 
 ```{r, eval = FALSE}
-library(tsibbledata)
+library(tsibbledata) #tsibble data compiles examples of tsibble data 
 
 # Load the AirPassengers dataset
 data("AirPassengers")
@@ -371,16 +371,15 @@ head(passenger_data)
 
 # Learn more about tsibble 
 
-- There is a whole ecosystem the tidyverts, around the tsibble package, aiming to tidy time series analysis : 
+- There is a whole ecosystem the tidyverts, around the tsibble package, aiming to tidy time series analysis :  [Tsibble Tidyverts](https://tsibble.tidyverts.org/)
   
   -The tsibbledata package which compiles various examples of tsibble data 
   
   -The feasts package which allows to visualize data and extract time series features 
   
-  -The fable package which offers a popular forecasting techniques for tsibble including ARIMA and ETS while its foundation, the
-  fabletools package, simplifies the modeling process when working with tsibble data. 
+  -The fable package which offers a popular forecasting techniques for tsibble including ARIMA and ETS while its foundation, the fabletools package, simplifies the modeling process when working with tsibble data. 
   
-  We will now learn more about the fable package, but before this do you have questions on the tsibble package ? 
+  We will now learn more about the fable package, but before this do you have questions on the tsibble package 
   
 ---
 
