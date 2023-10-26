@@ -29,11 +29,19 @@ output:
 
 # Our presentation in a nutshell
 
+.pull-left[
+### R Packages for Data Science : Introduction to Tsibble and Fable 
+
+**Temporal data with tsibble and fable** : 
+
+1. Introduction to the Tsibble Package for Time-Series Analysis
+2. Introduction to the Fable Package for Time-Series forecasting
+]
+
 .pull-right-small-center[
 <div align="center">
 <br>
 <img src="pics/tsibble-fable.png" height=250>
- <p style="text-align: center; font-size: 16px; font-weight:">image from: </p>
 </div>
 ]
 
