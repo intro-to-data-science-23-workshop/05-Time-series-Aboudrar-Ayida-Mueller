@@ -78,6 +78,7 @@ It is part of the 'tidyverts' packages who has been mostly done by Earo Wang and
 - [Tsibble](https://cran.microsoft.com/snapshot/2022-05-21/web/packages/tsibble/tsibble.pdf)
 - [Tsibble : example](https://robjhyndman.com/hyndsight/tsibbles/)
 - [Tsibble : Research Paper : a new tidy data structure to support exploration and modeling of temporal data](https://pdf.earo.me/tsibble.pdf)
+- [Tsibble : Tsibble objects](https://otexts.com/fpp3/tsibbles.html)
 ---
 
 # Tsibble Package
@@ -168,9 +169,9 @@ Here, year is the index variable, country and gender are the key variables (obse
 ---
 # More explanations of each principle 
 
-1. *Index* : We should understand easily what is the index and it should be easy to extract this information. 
+1. *Index* : Introduces temporal structure in tidy data frames. We should understand easily what is the index and it should be easy to extract this information. 
 
-2. *Key* : There can be one or more variable identifying the entities being measured within the dataset. Defining a key is especially important when the dataset contains multiple types of entities. It allows to describe the specific characteristics that make each type of entity unique. 
+2. *Key* : Storing multiple time series in a single object. There can be one or more variable identifying the entities being measured within the dataset. Defining a key is especially important when the dataset contains multiple types of entities. It allows to describe the specific characteristics that make each type of entity unique. 
 In the example of the paper, the table describes the number of tuberculosis cases for each gender across the countries every year. We should thus understand that the key contains at least columns gender and country. 
 To summarize, the tsibble key helps us identify and keep track of each observational unit over time. If we have duplicates of key-index pairs when constructing our tsibble, this will fail.
 
