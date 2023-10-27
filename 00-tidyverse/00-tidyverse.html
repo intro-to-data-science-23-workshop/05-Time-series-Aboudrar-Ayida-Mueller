@@ -500,7 +500,7 @@ A: Yes, when dealing with large datasets, we can consider the `data.table` packa
 class: inverse, center, middle
 name: tidyr
 
-# Presentation on Fable Package for Time series Forcasting
+# Presentation on Fable Package for Time series Forecasting
 
 &lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px style="width:1000px; margin:auto;"/&gt;&lt;/html&gt;
 
@@ -520,8 +520,6 @@ name: tidyr
 `Time Series forecasting` is a crucial component of data analysis, enabling us to make predictions about future values based on historical data points. 
 
 In R, the `fable` package provides a powerful framework for time series forecasting, making it easier than ever to create accurate and reliable forecasts.
-
-The existing integration of modeling and the tidyverse is especially problematic for time series, as the input data structure(ts) is/are inherently untidy. 
 
 Much like `tsibble` implements tidy time series data, the fable package applies tidyverse principles to time series modeling, making the forecasting workflow seamlessly integrate with other tidyverse packages. 
 
@@ -547,14 +545,12 @@ The fable package provides some commonly used univariate and multivariate time s
 
 These models are used within a consistent and tidy modeling framework, allowing several models to be estimated, compared, combined, forecasted and otherwise worked across many time series.
 
-**Note** The tidy models framework is a collection of R packages for modeling and machine learning using tidyverse principles 
-
 ---
-# The Role of Fable in R
+# Introduction to "fable"
 
-- Fable is an R package designed to streamline time series forecasting. It is built on top of the tidyverse, which makes it user-friendly and integrates seamlessly with other data manipulation and visualization tools in R.
+### The Role of Fable in R
 
-- Fable provides a wide range of forecasting models and methods, from simple ones like exponential smoothing to more complex models such as ARIMA and state space models. This diversity of approaches allows users to choose the most appropriate model for their specific data set and forecasting needs.
+- Fable is an R package provides a wide range of forecasting models and methods, from simple ones like exponential smoothing to more complex models such as ARIMA and state space models. This diversity of approaches allows users to choose the most appropriate model for their specific data set and forecasting needs.
 
 - Additionally, Fable makes it easy to visualize forecasts, evaluate model performance, and create production-ready reports. With the `fable` package, you can unlock the power of time series forecasting in R to gain insights and make data-driven decisions.
 
@@ -564,31 +560,43 @@ You can install the `fable` package from CRAN using the install.packages("fable"
 
 To load the package, use the library(fable) function.
 
-It is crucial to have the `tsibble` package installed and loaded, as `fable` heavily relies on it for time series data manipulation.
+- It is crucial to have the `tsibble` package installed and loaded, as `fable` heavily relies on it for time series data manipulation.
 
 ---
 
-# Key Features of "fable"
-
-### Unified Framework:
-
-This where fable seamlessly integrates with the `tsibble` package for easy manipulation of time series data. eg monthly sales data.This integration simplifies the entire process, from data import to modeling.
-
-### State Space Models:
-
-It offers advanced state space modeling, which can capture complex time series patterns and relationships.
-
-- State-space models deal with dynamic time series problems that involve unobserved variables or parameters that describe the evolution in the state of the underlying system(Kevin Kotzé)
-
-### Model Diagnostic Tools
+# Functions &amp; Model Diagnostic Tools
 
 `fable` includes an array of diagnostic tools to assess the quality and reliability of your forecasting models. 
 
 These tools may include visualizations, such as residual plots and forecasting accuracy metrics, like Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE), Cross-Validation, Autocorrelation etc. These diagnostics help you fine-tune your models.
 
----
+### Some functions in the Fable package
 
-# Key Features of "fable"
+`tsibble`: The tsibble (time seriesibble) is a core data structure in fable. It extends the data frame concept to handle time series data efficiently.
+
+`fable()`: This function is used to create a fable, which is a tidy representation of a model. A fable contains point forecasts, prediction intervals, and various components of a forecast.
+
+`model()`: The model() function is used to specify time series models for forecasting. It's used to fit models to the data and extract forecasts.
+
+---
+# Functions &amp; Model Diagnostic Tools
+
+`as_fable()`: This function converts time series objects into fable objects. It's particularly useful when you want to use fable functions with data in other formats.
+
+`forecast()`: This function generates point forecasts and prediction intervals for time series data based on a fitted model.
+
+`combine()`: Used to combine multiple fable objects into a single fable, which can be useful when working with multiple time series or models.
+
+`autoplot()`: An essential function for visualization. It's used to create time series plots and forecast visualizations from fable objects.
+
+`accuracy()`: This function is used to calculate accuracy metrics to evaluate the performance of forecasting models.
+
+`filter_fable()` and summarise_fable(): These functions allow you to filter and summarize the components of a fable, helping you extract specific information or insights.
+
+---
+# Functions &amp; Model Diagnostic Tools
+
+`refit()`: This function takes the existing model and incorporates the new data, updating the model parameters as needed.
 
 ### Visualization:
 
@@ -602,17 +610,52 @@ The package empowers users with rich visualization capabilities, enabling a bett
  - patchwork: allows you to combine and arrange multiple plots into a single, cohesive visualization. 
 
 ---
-# Models Available in the “fable" package
+# Functions &amp; Model Diagnostic Tools
 
 The `fable` package in R provides a variety of time series models for forecasting. Some of the key models available in the `fable` package include:
 
- - ETS Models: it provides most flexible way of modeling error, trend and seasonal elements together.
+### ETS Models 
+The ETS (Error-Trend-Seasonal) model is a popular and widely used time series forecasting model for analyzing and forecasting univariate time series data. 
  
- - ARIMA(p, d, q): Autoregressive integrated moving average model with specified order (p, d, q), where p,d,q represents autoregressive, integrated and moving average respectively.
+In the context of the R package fable, the ETS model is part of the forecasting framework provided by the fable package, which offers a unified interface for various time series forecasting methods.
 
- - PROPHET: Forecasting model developed by Facebook for time series with daily observations and multiple seasonality.
+### Functioning
+The ETS model decomposes a time series into three components: Error (E), Trend (T), and Seasonal (S). The model assumes that these components follow a certain structure, which can be additive (A) or multiplicative (M). So, there are six possible combinations of these components in ETS models:
 
-- Neural Network Models: regression models etc.
+---
+# Functions &amp; Model Diagnostic Tools
+### 6 possible combinations of these components in ETS models
+   - ETS(A,A,A): Additive errors, additive trend, and additive seasonality.
+   
+   - ETS(M,A,A): Multiplicative errors, additive trend, and additive seasonality.
+   
+   - ETS(A,A,M): Additive errors, additive trend, and multiplicative seasonality.
+   
+   - ETS(M,A,M): Multiplicative errors, additive trend, and multiplicative seasonality.
+   
+   - ETS(A,M,A): Additive errors, multiplicative trend, and additive seasonality.
+   
+   - ETS(M,M,A): Multiplicative errors, multiplicative trend, and additive seasonality.
+
+`The ETS model` assumes that the time series can be decomposed into the three components mentioned above. It assumes that the `errors are normally distributed and have constant variance` and the `trend and seasonal components `are assumed to follow a `specific structure`, which can be additive or multiplicative.
+
+---
+# Functions &amp; Model Diagnostic Tools
+### ARIMA Model
+ARIMA (AutoRegressive Integrated Moving Average) is a widely used time series forecasting model, and it can be used with the fable package in R for time series analysis.
+
+### Functioning
+   - ARIMA models are a combination of Autoregressive (AR) and Moving Average (MA) models, with an optional differencing (I) component for stationarity.
+   
+   - The AR component models the relationship between the current value and its past values.
+   
+   - The MA component models the relationship between the current value and past forecast errors.
+   
+   - The I component deals with differencing to make the time series stationary (i.e., constant mean and variance).
+   
+   - The ARIMA model is specified as ARIMA(p, d, q), where 'p' is the order of the autoregressive component, 'd' is the order of differencing, and 'q' is the order of the moving average component.
+
+**Others:** `PROPHET`, Forecasting model developed by Facebook and  `Neural Network Models`, regression models etc.
 
 
 .pull-left-wide[
@@ -776,22 +819,14 @@ fit = trips |&gt;
     ets = ETS(Trips),
     lm = TSLM(Trips ~ trend() + season())
   )
-```
-
-```
-## Warning: 1 error encountered for arima
-## [1] The `urca` package must be installed to use this functionality. It can be installed with install.packages("urca")
-```
-
-```r
 fit
 ```
 
 ```
 ## # A mable: 1 x 3
-##          arima          ets      lm
-##        &lt;model&gt;      &lt;model&gt; &lt;model&gt;
-## 1 &lt;NULL model&gt; &lt;ETS(A,A,A)&gt;  &lt;TSLM&gt;
+##                      arima          ets      lm
+##                    &lt;model&gt;      &lt;model&gt; &lt;model&gt;
+## 1 &lt;ARIMA(0,1,1)(0,1,1)[4]&gt; &lt;ETS(A,A,A)&gt;  &lt;TSLM&gt;
 ```
 
 The results now show the 3 models. We can also make a plot with respect to each model.
@@ -808,7 +843,7 @@ The results now show the 3 models. We can also make a plot with respect to each 
 .pull-center[
 &lt;div align="center"&gt;
 &lt;br&gt;
-&lt;img src="pics/p2.png" height=350&gt;
+&lt;img src="pics/p1.png" height=350&gt;
  &lt;p style="text-align: center; font-size: 16px; font-weight:"&gt; Time series plot&lt;/p&gt;
 &lt;/div&gt;
 ]
