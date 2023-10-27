@@ -10,12 +10,10 @@ output:
     theme: lumen
     toc_depth: 3
     toc_float: true
-    css: custom.css 
     self_contained: false
-    includes:
-      after_body: footer.html
 ---
 
+ 
 # TSIBBLE
 
 ```{r, fig.align='center', echo=F, out.width ="80%"}
@@ -40,10 +38,14 @@ if (!requireNamespace("ggplot2", quietly = TRUE)) {
 if (!requireNamespace("slider", quietly = TRUE)) {
   install.packages("slider")
 }
+if (!requireNamespace("datasets", quietly = TRUE)) {
+  install.packages("datasets")
+}
 library(tsibble)
 library(dplyr)
 library(ggplot2)
 library(slider)
+library(datasets)
 ```
 
 ## Task 1: Simple Time Series Manipulation
@@ -53,7 +55,7 @@ library(slider)
 **Instructions**:
 
 1.  Download the "AirPassengers" dataset, which is a basic monthly time series dataset, and load it into a tsibble.
-2.  Create a new column that calculates the 12-month moving average of the number of passengers.
+2.  Create a new column that calculates the 12-month moving average of the number of passengers. (Hint: Use the slide_dbl from the 'library(slider)' in following way: lag(value, order_by = row_number()) %>% slide_dbl(.x = ., .i = 12, .f = mean, .before = 11, .complete = TRUE) )
 3.  Plot the original time series and the moving average.
 
 **Solution**:
@@ -87,18 +89,18 @@ ts_data1 %>%
 
 **Instructions**:
 
-1.  Download the "mdeaths" dataset, which contains monthly deaths from lung disease, and load it into a tsibble.
+1.  Download the "UKLungDeaths" dataset, which contains monthly deaths from lung disease, and load it into a tsibble.
 2.  Handle missing values by interpolating them using linear interpolation.
 3.  Create a new column representing the death rate (deaths per 1000 population) and plot it along with the original number of deaths.
 
 **Solution**:
 
 ```{r task2}
-# Download the "mdeaths" dataset
-data("mdeaths")
+# Download the "UKLungDeaths" dataset
+data("UKLungDeaths")
 
 # Load the data into a tsibble
-ts_data2 <- mdeaths %>%
+ts_data2 <- ldeaths %>%
   as_tsibble(key = Month)
 
 # Handle missing values by linear interpolation
@@ -111,47 +113,13 @@ ts_data2 <- ts_data2 %>%
 
 # Plot the original number of deaths and death rate
 ts_data2 %>%
-  ggplot(aes(x = Month)) +
+  ggplot(aes(x = index)) +
   geom_line(aes(y = value), color = "blue", size = 1) +
   geom_line(aes(y = death_rate), color = "red", size = 1, linetype = "dashed") +
   labs(title = "Monthly Deaths and Death Rate", y = "Number of Deaths or Death Rate (per 1000 population)")
 ```
 
-## Task 3: Complex Time Series Analysis
 
-**Question**: How can we analyze and forecast a more complex time series dataset using the `tsibble` package and the seasonal decomposition of time series (STL) method?
-
-**Instructions**:
-
-1.  Download the "ausbeer" dataset, which represents quarterly beer production in Australia, and load it into a tsibble.
-2.  Perform seasonal decomposition using the STL method and visualize the components.
-3.  Fit an ETS (Error-Trend-Seasonality) model to the time series and make a forecast for the next 12 quarters.
-
-**Solution**:
-
-```{r task3}
-# Download the "ausbeer" dataset
-data("ausbeer")
-
-# Load the data into a tsibble
-ts_data3 <- ausbeer %>%
-  as_tsibble(key = Quarter)
-
-# Seasonal decomposition using STL
-decomp3 <- ts_data3 %>%
-  model(stl(Beer ~ season()))
-
-# Visualize the decomposition
-decomp3 %>%
-  autoplot()
-
-# Fit an ETS model and make a 12-quarter forecast
-forecast_ets3 <- ts_data3 %>%
-  model(ETS(Beer))
-forecast_ets3 %>%
-  forecast(h = 12) %>%
-  autoplot()
-```
 
 # FABLE
 
@@ -168,7 +136,7 @@ if (!requireNamespace("fable", quietly = TRUE)) {
 library(fable)
 ```
 
-## Task 1: Basic Time Series Forecasting
+## Task 3: Basic Time Series Forecasting
 
 **Question**: How can we make a simple time series forecast using the 'fable' package based on the previously manipulated time series data?
 
@@ -178,16 +146,14 @@ library(fable)
 2.  Fit an ETS (Error-Trend-Seasonality) model to the data.
 3.  Make a forecast for the next 24 months.
 
+
+
 **Solution**:
 
 ```{r task1}
-# Convert the tsibble data to a fable object
-fable_data1 <- ts_data1 %>%
-  as_tsibble(key = Month) %>%
-  as_fable()
 
 # Fit an ETS model
-forecast_ets1 <- fable_data1 %>%
+forecast_ets1 <- ts_data1 %>%
   model(ETS(value))
 
 # Make a 24-month forecast
@@ -199,77 +165,30 @@ forecast_24 %>%
   autoplot()
 ```
 
-## Task 2: Advanced Time Series Forecasting
+## Advanced: (no solutions here)
 
-**Question**: How can we use 'fable' for more advanced time series forecasting using the dataset from Task 2 in the previous answer (md?eaths)?
+We will use the famous AirPassengers dataset, which contains monthly airline passenger counts from 1949 to 1960.
 
-**Instructions**:
+### Task 1: Analyzing the Data (1949-1955)
 
-1.  Take the tsibble data from Task 2 in the previous answer (mdeaths) and convert it to a 'fable' object.
-2.  Fit an ARIMA (AutoRegressive Integrated Moving Average) model to the data.
-3.  Make a forecast for the next 24 months.
-4.  Visualize the forecast along with the original number of deaths and the death rate.
+**Objective:** Fit a regression model with seasonal and trend decomposition to the data from 1949 to 1955.
 
-**Solution**:
+**Instructions:** 1. Load the AirPassengers dataset. 2. Subset the data to include only the period from 1949 to 1955. 3. Create a tsibble object from the subset data. 4. Fit a regression model with seasonal and trend decomposition using `fable`. 5. Visualize the decomposition components.
+
+```{r task1}
+
+
+```
+
+### Task 2: Making Forecasts (1956-1960) and Comparison
+
+**Objective:** Generate forecasts for each month in the years 1956-1960 and compare them with the actual data.
+
+**Instructions:** 1. Subset the data to include only the period from 1956 to 1960. 2. Create a tsibble object from the subset data. 3. Generate forecasts using the previously fitted model. 4. Plot the forecasts and compare them with the actual data from the AirPassengers dataset.
 
 ```{r task2}
-# Convert the tsibble data to a fable object
-fable_data2 <- ts_data2 %>%
-  as_tsibble(key = Month) %>%
-  as_fable()
 
-# Fit an ARIMA model
-forecast_arima2 <- fable_data2 %>%
-  model(arima(value))
-
-# Make a 24-month forecast
-forecast_24 <- forecast_arima2 %>%
-  forecast(h = 24)
-
-# Plot the forecast along with the original number of deaths and death rate
-ts_data2 %>%
-  autoplot(value) +
-  autolayer(forecast_24, series = "value", color = "red") +
-  labs(title = "Monthly Deaths and Forecast", y = "Number of Deaths")
 ```
 
-## Task 3: Time Series Decomposition and Forecasting
+**Hints:** - Use the `forecast()` function with the previously fitted decomposition model to generate forecasts.
 
-**Question**: How can we use the 'fable' package for time series decomposition and advanced forecasting using the dataset from Task 3 in the previous answer (ausbeer)?
-
-**Instructions**:
-
-1.  Take the tsibble data from Task 3 in the previous answer (ausbeer) and convert it to a 'fable' object.
-2.  Perform a seasonal decomposition using the STL (Seasonal-Trend decomposition using Loess) method.
-3.  Fit an ETS (Error-Trend-Seasonality) model to the data.
-4.  Make a 12-quarter forecast.
-5.  Visualize the decomposition and the forecast.
-
-**Solution**:
-
-```{r task3}
-# Convert the tsibble data to a fable object
-fable_data3 <- ts_data3 %>%
-  as_tsibble(key = Quarter) %>%
-  as_fable()
-
-# Perform seasonal decomposition using STL
-decomp3_fable <- fable_data3 %>%
-  model(stl(Beer ~ season()))
-
-# Fit an ETS model
-forecast_ets3 <- fable_data3 %>%
-  model(ETS(Beer))
-
-# Make a 12-quarter forecast
-forecast_12 <- forecast_ets3 %>%
-  forecast(h = 12)
-
-# Visualize the decomposition and the forecast
-decomp3_fable %>%
-  components() +
-  forecast_12 %>%
-  autoplot()
-```
-
-This R-Markdown document builds on the previous 'tsibble' tutorial and provides three tasks of increasing complexity using the 'fable' package for time series forecasting and analysis. Each task includes clear questions, instructions, and solutions. You can run each code chunk to explore and experiment with the package.
