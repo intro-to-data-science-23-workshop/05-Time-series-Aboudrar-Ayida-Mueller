@@ -37,14 +37,25 @@ output:
 
 1. Introduction to the Tsibble Package for Time-Series Analysis
 2. Introduction to the Fable Package for Time-Series forecasting
+3. Tutorial
 ]
 
-.pull-right-small-center[
+.pull-right[
 <div align="center">
 <br>
-<img src="pics/tsibble-fable.png" height=250>
+<img src="pics/tsibble.png" height=200>
+
 </div>
 ]
+
+.pull-right[
+<div align="center">
+<br>
+<img src="pics/fable.png" height=200>
+
+</div>
+]
+
 
 ---
 class: inverse, center, middle
@@ -67,6 +78,25 @@ name: tsibble
 It is part of the 'tidyverts' packages who has been mostly done by Earo Wang and Mitchell O'Hara-Wild.
 ]
 
+
+.pull-right[
+<div align="center">
+<br>
+<img src="pics/E-Wang.png" height=200>
+ <p style="text-align: center; font-size: 16px; font-weight:">image from: earo</p>
+
+</div>
+]
+
+.pull-right[
+<div align="center">
+<br>
+<img src="pics/O'Hara-Wild.png" height=200>
+ <p style="text-align: center; font-size: 16px; font-weight:">image from: Acems</p>
+
+</div>
+]
+
 ---
 
 # A Guide to Tsibble
@@ -76,7 +106,7 @@ It is part of the 'tidyverts' packages who has been mostly done by Earo Wang and
 - [Tsibble : RDocumentation](https://www.rdocumentation.org/packages/tsibble/versions/1.1.3)
 - [Tsibble : learn more about tsibble](https://tsibble.tidyverts.org/) 
 - [Tsibble : tidy temporal data frames and tools](https://search.r-project.org/CRAN/refmans/tsibble/html/tsibble-package.html)
-- [Tsibble](https://cran.microsoft.com/snapshot/2022-05-21/web/packages/tsibble/tsibble.pdf)
+- [Tsibble : CRAN](https://cran.microsoft.com/snapshot/2022-05-21/web/packages/tsibble/tsibble.pdf)
 - [Tsibble : example](https://robjhyndman.com/hyndsight/tsibbles/)
 - [Tsibble : Research Paper : a new tidy data structure to support exploration and modeling of temporal data](https://pdf.earo.me/tsibble.pdf)
 - [Tsibble : Tsibble objects](https://otexts.com/fpp3/tsibbles.html)
@@ -97,17 +127,18 @@ install.packages("tsibble")
 ```{r, eval = FALSE}
 library(tsibble)
 ```
+
 ---
 
 # Purpose of the Tsibble Package
 
--Set of tools and functions for creating a structured framework for working with time-series data.
+-Set of **tools** and **functions** for creating a structured framework for working with time-series data.
 
--Integrates information about time index, key, and other attributes to make it easier to work with time-based data.
+-Integrates information about **time index**, **key**, and other attributes to make it easier to work with time-based data.
 
--Wrangling tools to get data into a useful form for visualization and modeling.
+-Wrangling tools to get data into a useful form for **visualization** and modeling.
 
--Part of the tidyverse, making it compatible with other tidyverse packages like ggplot2, dplyr, and tidyr.
+-Part of the **tidyverse**, making it compatible with other tidyverse packages like ggplot2, dplyr, and tidyr.
 
 ---
 
@@ -115,24 +146,83 @@ library(tsibble)
 
 ### A reminder of time series data: Stats I and II
 
-1. "Time series allows for delayed effects or effects that persist over time." Time series data is a sequence of observations collected over time.
-2. In time series, there is a clear temporal ordering, and time series are indexed by time.
-3. Time series require relatively many measurements (long lengths) conversely to longitudinal data (pnael data) which often assume fewer measurements but a large number of individuals. 
+A time series is a series of **discrete-time data** (points or observations) \(y_t\) that are gathered or recorded at different moments in time. 
+
+1. "Time series allows for **delayed effects** or effects that persist over time." 
+
+2. In time series, there is a clear **temporal ordering**, and time series are indexed by **time**.
+
+3. Time series require relatively **many measurements** (long lengths) conversely to longitudinal data (panel data) which often assume fewer measurements but a large number of individuals. 
+
 3. Examples in which time series are useful include studying the delayed effect of a gaffe by a political candidate on his popularity for a period.
-4. It helps identify trends and make forecasts.
+
+4. Time series analysis helps understand the data, finding patterns and **trends**. 
+5. Time series **forecasting** uses this analysis to make predictions about what might happen in the future based on what happened in the past. 
 
 ---
 
-### Data Structure
+### Some assumptions for time series : 
 
-A tsibble is an enhanced version of a data frame or tibble (i.e., a data structure part of the tidyverse, an alternative to a data frame) specifically designed for time series data. It integrates information about time index, key, and other attributes, making it easier to work with time-based data.
+1. **Stationarity** : 
 
-- The tsibble package is used at the tidy stage to "verify if the raw temporal data is appropriate for doswnstream analytics" ie if the raw time-related data is well-structured enough for more advanced analysis that comes later in the data processing pipelines. So 'tsibble' assesses if the data is in a good format for further analysis. [Tsibble Research Paper](https://pdf.earo.me/tsibble.pdf):
+-Constant mean and constant variance 
+-Mathematically, stationarity can be defined as:
+     \(\mu_t = \mu\) (constant mean) and \(\sigma_t^2 = \sigma^2\) (constant variance)
+     
+2. **Independence** : 
+
+-Each observation in the time series is **not influenced** by previous or future observations. 
+
+-Mathematically, \(\text{Cov}(y_t, y_{t-k}) = 0\) for \(k \neq 0\)
+
+3. **Normality** :
+
+-Some models assume that the errors or residuals (\(\varepsilon_t\)) follow a **normal distribution**.
+
+-This is particularly important for statistical **inferences** and constructing prediction intervals. 
+
+---
+
+### Most important concepts for time series : 
+
+1. **Autocorrelation Function** : 
+
+Measures the correlation between a time series observation at time \(t\) and its **past values** at different lags (\(k\)). It is denoted as \(\rho(k)\) and is expressed as:
+     \(\rho(k) = \frac{\text{Cov}(y_t, y_{t-k})}{\sigma^2}\).
+
+2. **Seasonality** : 
+
+Represents repeating patterns in the data at **fixed time intervals**, such as daily, weekly, or yearly. These patterns can be modeled mathematically using periodic functions. 
+
+3. **Trends** : 
+
+Indicates the **long-term direction of change** in a time series. Can be linear or nonlinear, capturing overall increases or decreases in values over time. 
+
+Can be expressed mathematically as : 
+\(\text{Trend}(t) = \beta_0 + \beta_1 t\).
 
 .center[
 <div align="center">
 <br>
-<img src="pics/tsibble_step.png" height=200>
+<img src="pics/ts.png" height=200>
+ <p style="text-align: center; font-size: 16px; font-weight:">image from: Wikipedia</p>
+
+</div>
+]
+---
+
+# Data Structure
+
+.pull-left[
+A tsibble is an **enhanced version** of a data frame or tibble (i.e., a data structure part of the tidyverse, an alternative to a data frame) specifically designed for **time series data**. 
+
+- The tsibble package is used at the **tidy stage** to "verify if the raw temporal data is appropriate for downstream analytics" ie if the raw time-related data is well-structured enough for more advanced analysis that comes later in the data processing pipelines. So `tsibble` assesses if the data is in a good format for further analysis. [Tsibble Research Paper](https://pdf.earo.me/tsibble.pdf):
+]
+
+.pull-right[
+<div align="center">
+<br>
+<img src="pics/tsibble_step.png" width=650 height=400>
 </div>
 ]
 ---
@@ -141,10 +231,10 @@ A tsibble is an enhanced version of a data frame or tibble (i.e., a data structu
 
 - In tsibble :  [tidy data principles](https://tsibble.tidyverts.org/)
 
-1. Index is a variable with inherent ordering from past to present.
-2. Key is a set of variables that define observational units over time.
-3. Each observation should be uniquely identified by index and key.
-4. Each observational unit should be measured at a common interval, if regularly spaced.
+1. **Index** is a variable with inherent **ordering** from past to present.
+2. **Key** is a set of variables that define observational units over time.
+3. Each observation should be **uniquely identified** by index and key.
+4. Each observational unit should be measured at a **common interval**, if regularly spaced.
 
 ---
 .center[
@@ -170,24 +260,25 @@ Here, year is the index variable, country and gender are the key variables (obse
 ---
 # More explanations of each principle 
 
-1. *Index* : Introduces temporal structure in tidy data frames. We should understand easily what is the index and it should be easy to extract this information. 
+1. *Index* : Introduces **temporal structure** in tidy data frames. We should understand easily what is the index and it should be easy to extract this information. 
 
-2. *Key* : Storing multiple time series in a single object. There can be one or more variable identifying the entities being measured within the dataset. Defining a key is especially important when the dataset contains multiple types of entities. It allows to describe the specific characteristics that make each type of entity unique. 
-In the example of the paper, the table describes the number of tuberculosis cases for each gender across the countries every year. We should thus understand that the key contains at least columns gender and country. 
-To summarize, the tsibble key helps us identify and keep track of each observational unit over time. If we have duplicates of key-index pairs when constructing our tsibble, this will fail.
+2. *Key* : Way to **store multiple time series** in one dataset. 
+The key identifies **unique** entities or groups within the data, especially when there are different types of entities. 
+In the past example, the key would include variables like "gender" or "country" since the data records tuberculosis cases for each gender in different countries every year. 
+The tsibble key helps identifying and distinguishing each entity over time. 
 
-3. *Interval* : We have two main categories of time data : regular and irregular time intervals. Examples of irregular time intervals are flight schedules. The tsibble will reports a single interval even if the data has a mix of different intervals. 
+3. *Interval* : We have two main categories of time data : regular and irregular time intervals. Examples of irregular time intervals are flight schedules. The tsibble will reports a **single interval** even if the data has a mix of different intervals. 
 ---
 
 # Key Features of "tsibble"
 
 ### *Index and Key*: 
 
-The tsibble structure allows us to specify a time index and a key that uniquely identifies each time series in the data. It's designed to simplify time-series data handling and includes the temporal aspect of the data.
+The tsibble structure allows us to specify a time index and a key that **uniquely identifies each time series** in the data. It's designed to simplify time-series data handling and includes the temporal aspect of the data.
 
 ### *Time-Based Operations*: 
 
-The package provides a range of operations for manipulating and transforming time series data, including handling irregular time intervals, filling gaps, and handling missing values.
+The package provides a range of operations for **manipulating and transforming** time series data, including handling irregular time intervals, filling gaps, and handling missing values.
 
 ### *Visualization*: 
 
@@ -201,17 +292,32 @@ Tsibble data objects work seamlessly with other time series analysis packages in
 
 ### Why Should We Use It?
 
-- Makes it easier to prepare time-series data for analysis.
+- Makes it easier to **prepare time-series data** for analysis.
 
-- A good way to manipulate and visualize time-series data.
+- A good way to manipulate and **visualize** time-series data.
 
-- Helps keep your code tidy and clean.
+- Helps keep your code **tidy** and **clean**.
 
-- Particularly useful when dealing with large volumes of time-series data.
+- Particularly useful when dealing with **large volumes** of time-series data.
 
 ---
 
-# Creating a Tsibble
+# Main functions provided by tsibble : 
+
+`as_tsibble()` : converting data into a tsibble ie into a time series data frame with time intervals and key columns.
+
+`fill_gaps()` : fill gaps in a time series, ensuring that there are no missing time points. Useful for creating a complete time series with regular intervals. 
+
+`index_by()` : helps to specify the time index of our tsibble. We can use it to define the time variable and the key variable that uniquely identifies each time series within our data. 
+
+`interval()` : used to specify the time interval of our time series data. Crucial to work with regularly spaced time series. 
+
+`aggregate_key()` : used to aggregate a tsibble based on specific keys. Good for summarizing or grouping time series data. 
+
+`index()` and `time_index()` : help extract or manipulate the time index in a tsibble. 
+
+---
+# Example : turning a dataframe into tsibble data and visualization
 
 .pull-left[
 **Tsibble with Hypothetical Data**
@@ -241,7 +347,6 @@ head(sales_data)
 
 .pull-right[
 **Visualization with Tsibble**
-
 ---
 
 Tsibble can be used to create time-series visualizations. Here's an example using ggplot2:
@@ -256,12 +361,23 @@ sales_data %>%
 ```
 
 ]
+
+---
+
+.center[
+<div align="center">
+<br>
+<img src="pics/ggplot.png" width=800 height=500>
+</div>
+]
+
 ---
 
 # Tidy time series data using tsibbles : example by [Rob J Hyndman](https://robjhyndman.com/hyndsight/tsibbles/)
 
-'tsibble' is a new way of organizing time date easier than some older method such as ts. It also us to swtich data from the older 'ts' format to the 'tsibble' format by using the function 'as_tsibble'. 
+`tsibble` is a new way of organizing time date easier than some older method such as ts. It allows us to switch data from the older 'ts' format to the `tsibble` format by using the function `as_tsibble`. 
 
+Here, in the example : 
 ```{r, eval = FALSE}
 #To illustrate this idea : let's take an example : 
 library(tidyverse)
@@ -271,7 +387,11 @@ USAccDeaths %>% as_tsibble()
 #Moreover it is also possible to create tsibbles from csv files by using readr::read_csv() followed by the as_tsibble() function.
 ```
 
+Different data types can be converted into a tsibble object such as Data frames, Time series objects as we just saw, tidy data or numeric vectors with a time index. 
+
 ---
+
+# Tsibble object containing quaterly time measurement 
 
 ```{r, eval = FALSE}
 #Let's see an example of a tsibble object containing quaterly overnight trips across Australia
@@ -294,26 +414,7 @@ tourism %>%
 
 ---
 
-```{r, eval = FALSE}
-#Let's see an example of a tsibble object containing quaterly overnight trips across Australia
-tourism
-#There are three keys : Region, State, Purpose and one measurement : Trips. 
-#Say we want to get the total visitor nights spent on Holiday by State for each quarter ignoring Regions : 
-tourism %>%
-  filter(Purpose == "Holiday") %>%
-  group_by(State) %>%
-  summarise(Trips = sum(Trips))
-#Important note : we don't have to explicitly group by the time index because it is assumed in a tsibble. 
-#Let's switch to annual data and thus re-index the tsibble : 
-tourism %>%
-  mutate(Year = lubridata::year(Quarter)) %>%
-  index_by(Year) %>% #here, index_by plays the same role as the group_by function 
-  group_by(Region, State, Purpose) %>%
-  summarise(Trips = sum(Trips)) %>%
-  ungroup()
-```
-
----
+# Tsibble object with daily and sub-daily data 
 
 ```{r, eval = FALSE}
 #The tsibble package also handles very well daily and sub-daily data. Let's take the example of hourly pedestrian counts at four sites around Melbourne, Austrialia : 
@@ -331,54 +432,15 @@ pedestrian %>%
 ```
 ---
 
-Let's create a tsibble with a hypothetical dataset:
-
-library(tsibble)
-library(dplyr)
-
-```{r, eval = FALSE}
-# We first have to create a tsibble object.
-# Create a dataframe sales_data with three columns: Date, Product_ID, and Sales.
-sales_data <- data.frame(
-  Date = seq.Date(from = as.Date("2023-01-01"), by = "1 day", length.out = 30),
-  Product_ID = rep(1:3, each = 10),
-  Sales = rnorm(30)
-) %>%
-  as_tsibble(index = Date, key = Product_ID)
-
-# View the tsibble with head.
-head(sales_data)
-```
-
----
-
-With a Real Dataset: AirPassengers, monthly airline passenger numbers from 1949 to 1960:
-
-```{r, eval = FALSE}
-library(tsibbledata) #tsibble data compiles examples of tsibble data 
-
-# Load the AirPassengers dataset
-data("AirPassengers")
-
-# Convert it to a tsibble
-passenger_data <- AirPassengers %>%
-  as_tsibble(index = Yearmonth)
-
-# View the tsibble
-head(passenger_data)
-```
-
----
-
 # Learn more about tsibble 
 
-- There is a whole ecosystem the tidyverts, around the tsibble package, aiming to tidy time series analysis :  [Tsibble Tidyverts](https://tsibble.tidyverts.org/)
+- There is a whole ecosystem the `tidyverts`, around the `tsibble` package, aiming to tidy time series analysis :  [Tsibble Tidyverts](https://tsibble.tidyverts.org/)
   
-  -The tsibbledata package which compiles various examples of tsibble data 
+  -The `tsibbledata` package which compiles various examples of tsibble data 
   
-  -The feasts package which allows to visualize data and extract time series features 
+  -The `feasts` package which allows to visualize data and extract time series features 
   
-  -The fable package which offers a popular forecasting techniques for tsibble including ARIMA and ETS while its foundation, the fabletools package, simplifies the modeling process when working with tsibble data. 
+  -The `fable` package which offers a popular forecasting techniques for tsibble including ARIMA and ETS while its foundation, the fabletools package, simplifies the modeling process when working with tsibble data. 
   
   We will now learn more about the fable package, but before this do you have questions on the tsibble package 
   
@@ -392,9 +454,9 @@ head(passenger_data)
 
 **Q: **: What other packages work well with tsibble for time-series analysis?
 
-A:  Tsibble is part of the tidyverse, so it integrates seamlessly with other tidyverse packages like ggplot2, dplyr, and tidyr. Additionally, tsibble is compatible with time-series analysis packages like forecast and fable.
+A:  Tsibble is part of the `tidyverse`, so it integrates seamlessly with other tidyverse packages like ggplot2, dplyr, and tidyr. Additionally, tsibble is compatible with time-series analysis packages like forecast and fable.
 
-**Q: ** Is tsibble suitable for handling large volumes of time-series data?
+**Q: ** Is tsibble suitable for handling **large volumes** of time-series data?
 
 A: Yes, tsibble is a great choice for working with large volumes of time-series data. Its design principles make it efficient for managing and analyzing time-series data.
 
@@ -404,9 +466,9 @@ A: Yes, tsibble is a great choice for working with large volumes of time-series 
 
 <br>
 
-**Q: ** Are there alternatives to dplyr for data wrangling when working with tsibble?
+**Q: ** Are there **alternatives to dplyr** for data wrangling when working with tsibble?
 
-A: Yes, when dealing with large datasets, you might want to consider the data.table package as an alternative to dplyr. Another option is to use dtplyr, which is a data.table backend for dplyr. It automatically translates dplyr code to data.table code for faster performance.
+A: Yes, when dealing with large datasets, we can consider the `data.table` package as an alternative to dplyr. Another option is to use dtplyr, which is a data.table backend for dplyr. It automatically translates dplyr code to data.table code for faster performance.
 
 ]
 
@@ -684,34 +746,5 @@ A lot more could be done with respect to whatever your problem set maybe.
 - Model equation output (equation())
 - Broom verbs (augment(), coef()/tidy(), glance())
 - Model fits (fitted(), residuals())
-]
-
----
-
-# FAQ
-
-.pull-left[
-
-<br>
-
-**Q:  **
-
-A: 
-
-**Q: **
-
-A:
-]
-
-.pull-right[
-
-<br>
-
-**Q:**
-
-A: 
-  
-**Q:**
-
 ]
 
