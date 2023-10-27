@@ -659,7 +659,7 @@ The terms used with the fable model somewhat include model specific functions ca
 
 `Fable` allows model specification that supports formula based interface. eg lm()
 
-`ETS()` function `ref: page 55` is used to define `exponential smoothing models` which provides ‘specials’ for controlling the error(), trend() and season().
+`ETS()` function is used to define `exponential smoothing models` which provides ‘specials’ for controlling the error(), trend() and season().
 
 **Note** finding an appropriate model specification can be tricky as it requires some prior knowledge about temporal patterns. **Do not worry!** 
 
@@ -674,7 +674,7 @@ ETS model can be implement with:
 `ETS(Trips)`
 
 ### Model Estimation
-This training one or more unique models with a dataset. To do this we can use the `model()` function. eg:
+This is training one or more unique models with a dataset. To do this we can use the `model()` function. eg:
 
 ---
 # Forecasting with fable
