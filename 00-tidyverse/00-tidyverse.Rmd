@@ -22,8 +22,9 @@ output:
 1. [Basics](#basics)
 2. [Tsibble](#tsibble)
 3. [Fable](#fable)
-4. [Coding style](#style)
-5. [Summary](#summary)
+4. [Summary](#summary)
+5. [Tutorial](#tutorial)
+6. [References](#references)
 
 ---
 
