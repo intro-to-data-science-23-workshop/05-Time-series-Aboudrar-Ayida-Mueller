@@ -682,8 +682,6 @@ This is the process of defining and describing the structure, components, and as
 
 `ETS()` and other models automatically choose the best specification if several options are available. `fable` can determine if the seasonality is additive (season("A")) or multiplicative (season("M")), using:
 
-`ETS(Trips ~ error("A") + trend("A") + season(c("A", "M")))` considering the tourist data in R
-
 ETS model can be implement with:
 `ETS(Trips)`
 
