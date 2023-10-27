@@ -1,6 +1,26 @@
-title: "Tsibble and Fable" subtitle:"Projekt of Armande, Benjami and Johannes" output: html_document: toc: TRUE df_print: paged number_sections: FALSE highlight: tango theme: lumen toc_depth: 3 toc_float: true css: custom.css self_contained: false includes: after_body: footer.html
+---
+title: "Temporal data with tsibble and fable"
+subtitle: "Dataworkshop with Armande, Benjamn and Johannes"
+output: 
+  html_document:
+    toc: TRUE
+    df_print: paged
+    number_sections: FALSE
+    highlight: tango
+    theme: lumen
+    toc_depth: 3
+    toc_float: true
+    css: custom.css 
+    self_contained: false
+    includes:
+      after_body: footer.html
+---
 
-#TSIBBLE
+# TSIBBLE
+
+```{r, fig.align='center', echo=F, out.width ="80%"}
+knitr::include_graphics("pics/tsibble.png")
+```
 
 We'll include three tasks of varying complexity, including clear questions and instructions, and provide example solutions using external datasets that can be downloaded from online sources.
 
@@ -17,9 +37,13 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
 if (!requireNamespace("ggplot2", quietly = TRUE)) {
   install.packages("ggplot2")
 }
+if (!requireNamespace("slider", quietly = TRUE)) {
+  install.packages("slider")
+}
 library(tsibble)
 library(dplyr)
 library(ggplot2)
+library(slider)
 ```
 
 ## Task 1: Simple Time Series Manipulation
@@ -35,8 +59,10 @@ library(ggplot2)
 **Solution**:
 
 ```{r task1}
+
 # Download the "AirPassengers" dataset
 data("AirPassengers")
+
 
 # Load the data into a tsibble
 ts_data1 <- AirPassengers %>%
@@ -44,14 +70,15 @@ ts_data1 <- AirPassengers %>%
 
 # Create a moving average
 ts_data1 <- ts_data1 %>%
-  mutate(moving_average = lag(value, order_by = Month) %>% slide_dbl(.x = ., .i = 12, .f = mean, .before = 11, .complete = TRUE))
+  mutate(moving_average = lag(value, order_by = row_number()) %>% slide_dbl(.x = ., .i = 12, .f = mean, .before = 11, .complete = TRUE))
 
 # Plot the original time series and moving average
 ts_data1 %>%
-  ggplot(aes(x = Month)) +
+  ggplot(aes(x = index)) +
   geom_line(aes(y = value), color = "blue", size = 1) +
   geom_line(aes(y = moving_average), color = "red", size = 1, linetype = "dashed") +
   labs(title = "Monthly Airline Passengers and 12-Month Moving Average", y = "Number of Passengers")
+
 ```
 
 ## Task 2: Advanced Time Series Manipulation
@@ -126,7 +153,11 @@ forecast_ets3 %>%
   autoplot()
 ```
 
-#FABLE
+# FABLE
+
+```{r, fig.align='center', echo=F, out.width ="80%"}
+knitr::include_graphics("pics/fable.png")
+```
 
 Before we start, make sure to have the 'fable' package installed:
 
